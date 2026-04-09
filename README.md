@@ -17,17 +17,37 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+Real-world music recommendation systems like Spotify or Apple Music analyze vast amounts of user data including listening history, explicit preferences, and behavioral patterns to suggest songs. They use complex algorithms combining collaborative filtering (what similar users like), content-based filtering (song attributes), and sometimes deep learning models to predict what you'll enjoy next. These systems prioritize personalization, discovery, and engagement while balancing factors like diversity, novelty, and avoiding filter bubbles.
 
-Some prompts to answer:
+My version will prioritize a simple content-based approach that matches user preferences directly to song attributes, focusing on musical "vibe" through genre, mood, and audio features. It will calculate relevance scores based on how well songs match a user's stated preferences, then rank and recommend the highest-scoring songs. This approach emphasizes transparency and interpretability over the black-box nature of large-scale systems.
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+**Song object features:**
+- genre (categorical: pop, lofi, rock, etc.)
+- mood (categorical: happy, chill, intense, etc.) 
+- energy (numerical: 0-1 scale of intensity)
+- valence (numerical: 0-1 scale of positivity/happiness)
+- danceability (numerical: 0-1 scale of groove/dance potential)
 
-You can include a simple diagram or bullet list if helpful.
+**UserProfile object features:**
+- preferred_genre (categorical preference)
+- preferred_mood (categorical preference)
+- preferred_energy (numerical target value 0-1)
+- preferred_valence (numerical target value 0-1)
+- preferred_danceability (numerical target value 0-1)
+
+**Algorithm Recipe:**
+For each song, calculate a total score using these rules:
+- +2.0 points for exact genre match
+- +1.0 point for exact mood match  
+- Energy similarity: 1 - |user_target_energy - song_energy|
+- Valence similarity: 1 - |user_target_valence - song_valence|
+- Danceability similarity: 1 - |user_target_danceability - song_danceability|
+
+Total score = genre_points + mood_points + energy_similarity + valence_similarity + danceability_similarity
+
+Songs are then ranked by total score (highest first) to generate recommendations.
+
+**Potential Biases:** This system might over-prioritize genre matches (worth 2 points) compared to mood (1 point), potentially ignoring great songs that match the user's mood but are in different genres. It could also create filter bubbles by consistently recommending similar songs, limiting exposure to diverse musical styles.
 
 ---
 
